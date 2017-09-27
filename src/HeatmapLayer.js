@@ -82,6 +82,7 @@ export default class HeatmapLayer extends MapLayer {
     fitBoundsOnLoad: React.PropTypes.bool,
     fitBoundsOnUpdate: React.PropTypes.bool,
     onStatsUpdate: React.PropTypes.func,
+    scaleIntensityWithZoom: React.PropTypes.bool,
     /* props controlling heatmap generation */
     max: React.PropTypes.number,
     radius: React.PropTypes.number,
@@ -91,6 +92,10 @@ export default class HeatmapLayer extends MapLayer {
     gradient: React.PropTypes.object
   };
 
+  static defaultProps = {
+    scaleIntensityWithZoom: true
+  };
+  
   createLeafletElement() {
     return null;
   }
@@ -282,6 +287,7 @@ export default class HeatmapLayer extends MapLayer {
     const getLat = this.props.latitudeExtractor;
     const getLng = this.props.longitudeExtractor;
     const getIntensity = this.props.intensityExtractor;
+    const scaleIntensityWithZoom = this.props.scaleIntensityWithZoom;
 
     const inBounds = (p, bounds) => bounds.contains(p);
 
@@ -316,7 +322,7 @@ export default class HeatmapLayer extends MapLayer {
       const cell = grid[y][x];
 
       const alt = getIntensity(point);
-      const k = alt * v;
+      const k = alt * (scaleIntensityWithZoom ? v : 1);
 
       if (!cell) {
         grid[y][x] = [p.x, p.y, k, 1];
